@@ -26,7 +26,7 @@ This script is your trusty companion in the job hunt, automating the process of 
 
 1. Install Python 3.
 2. Install required libraries by running `pip install -r requirements.txt`.
-3. Prepare a `data.csv` file with an `email` column containing recipient addresses.
+3. Prepare a `email.csv` file with an `email` column containing recipient addresses.
 4. Have your résumé file (e.g., `resume.pdf`) in the same directory.
 5. Create a `.env` file in the project directory and add the following lines:
 
