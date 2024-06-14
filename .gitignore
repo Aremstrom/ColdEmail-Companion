@@ -1,0 +1,20 @@
+# Ignore all .csv files
+*.csv
+
+# Ignore the .env file
+.env
+
+# Ignore all .pdf files
+*.pdf
+
+# Ignore Python cache files and folders
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore various other files and directories
+.DS_Store
+*.log
