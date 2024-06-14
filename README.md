@@ -1,4 +1,4 @@
-# Job Seeker's Sidekick: Automate Resume Delivery
+# ColdEmail-Companion
 
 A sleek Python script to streamline job application emails with résumé attachments.
 
