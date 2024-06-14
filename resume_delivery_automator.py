@@ -8,24 +8,29 @@ from email.mime.application import MIMEApplication
 
 load_dotenv()
 
-email = os.getenv('EMAIL_ADDRESS')
-password = os.getenv('EMAIL_PASSWORD')
+EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
-# Open the CSV file
-with open('email.csv', 'r') as csvfile, open('data_updated.csv', 'w', newline='') as updated_file:
+# Open the CSV files
+with open('email.csv', 'r') as csvfile, open('data_updated.csv', 'r+', newline='') as updated_file:
     csvreader = csv.DictReader(csvfile)
     fieldnames = csvreader.fieldnames + ['Email_Sent']
     csvwriter = csv.DictWriter(updated_file, fieldnames=fieldnames)
-    csvwriter.writeheader()
 
     # Loop through each row in the CSV file
     for row in csvreader:
-        # Extract the email address from the row
         recipient_email = row['email']
+
+        # Check if the email has already been sent
+        updated_file.seek(0)
+        sent_emails = [row for row in csv.DictReader(updated_file) if row['email'] == recipient_email and row['Email_Sent'] == 'Yes']
+        if sent_emails:
+            print(f'Skipping email to {recipient_email} (already sent)')
+            continue
 
         # Create a multipart message
         msg = MIMEMultipart()
-        msg['From'] = email
+        msg['From'] = EMAIL_ADDRESS
         msg['To'] = recipient_email
         msg['Subject'] = 'Job Application'
 
@@ -36,15 +41,29 @@ with open('email.csv', 'r') as csvfile, open('data_updated.csv', 'w', newline=''
             msg.attach(resume_part)
 
         # Add the body of the email
-        body = 'Dear HR,\n\nPlease find my resume attached for your consideration.\n\nBest regards,\nYour Name'
-        msg.attach(MIMEText(body, 'plain'))
+        # body = 'Dear HR,\n\nPlease find my resume attached for your consideration.\n\nBest regards,\nYour Name'
+        body = """\
+        <html>
+        <body>
+            <p>Dear HR,<br><br>
+        
+        Please find my resume attached for your consideration.
+            
+            Best regards,<br>
+            Your Name
+            </p>
+        </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(body, 'html'))
 
         # Send the email
         with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
             smtp.starttls()
-            smtp.login(email, password)
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
             try:
-                failed = smtp.sendmail(email, recipient_email, msg.as_string())
+                failed = smtp.sendmail(EMAIL_ADDRESS, recipient_email, msg.as_string())
                 if failed:
                     print(f'Failed to send email to {recipient_email}')
                     row['Email_Sent'] = 'No'
